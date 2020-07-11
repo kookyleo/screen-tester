@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>screen defective pixels tester</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        svg {
+            background-color: black;
+        }
+
+        pre#tips {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <svg id="main" width="100%" height="100%" preserveAspectRatio="none" viewBox="0, 0, 800, 450">
+        <g id="testzone">
+            <rect x="-10" y="-10" width="180" height="110" fill="#FFF">
+                <animateMotion path="m0 0 h640 v90
+                                     h-640 v90
+                                      h640 v90
+                                     h-640 v90
+                                      h640 v90" begin="indefinite" dur="180s" repeatCount="indefinite" />
+            </rect>
+        </g>
+    </svg>
+    <pre id="tips">
+        ========================== tips ===========================
+        press Enter/ESC to get or exit full-screen model           
+        press Space     to start or pause or continue test         
+        press Shift     to toggle the background color in test zone
+    </p>
+    </pre>
+
+    <script>
+        const body = document.querySelector("body")
+        const tips = document.querySelector("pre#tips")
+        const svg = document.querySelector("svg#main")
+        const testzone = document.querySelector("g#testzone > rect")
+        const testzone_animate = document.querySelector("g#testzone > rect > animateMotion")
+
+        const colors = ["#F00", "#0F0", "#00F", "#FF0", "#0FF", "#F0F", "#FFF"];
+        const colors_generator = (function* () {
+            while (true) {
+                for (c of colors) {
+                    yield c
+                }
+            }
+        })()
+        const color = () => colors_generator.next().value;
+
+        ////
+        document.onkeydown = function (ev) {
+            var e = ev || window.event;
+            var key = e.which || e.keyCode || e.charCode;
+            if (key == 13) {
+                body.requestFullscreen();
+            } else if (key == 32) {
+                switch (this.testzone_animate_status) {
+                    case 0:
+                        svg.pauseAnimations();
+                        this.testzone_animate_status = 1;
+                        break;
+                    case 1:
+                        svg.unpauseAnimations();
+                        this.testzone_animate_status = 0;
+                        break;
+                    case undefined:
+                    default:
+                        tips.style.display = "none";
+                        testzone_animate.beginElement();
+                        this.testzone_animate_status = 0;
+                        break;
+                }
+            }
+            if (e.shiftKey) {
+                testzone.style.fill = color();
+            }
+        };
+    </script>
+</body>
+
+</html>
