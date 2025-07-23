@@ -41,10 +41,11 @@
     </svg>
     <pre id="tips">
         ========================== tips ===========================
-        press Enter/ESC to get or exit full-screen model           
+        <span class="tips-keyboard">press Enter/ESC to get or exit full-screen model           
         press Space     to start or pause or continue test         
-        press Shift     to toggle the background color in test zone
-    </p>
+        press Shift     to toggle the background color in test zone</span><span class="tips-touch" style="display:none">Pinch        to get or exit full-screen model           
+        Double Tap   to start or pause or continue test         
+        Single Tap   to toggle the background color in test zone</span>
     </pre>
 
     <script>
@@ -63,6 +64,16 @@
             }
         })()
         const color = () => colors_generator.next().value;
+
+        // Detect touch device and update tips
+        function isTouchDevice() {
+            return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        }
+
+        if (isTouchDevice()) {
+            document.querySelectorAll('.tips-keyboard').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.tips-touch').forEach(el => el.style.display = 'inline');
+        }
 
         // Common functions
         let testzone_animate_status = undefined;
